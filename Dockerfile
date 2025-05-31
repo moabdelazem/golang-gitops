@@ -25,8 +25,8 @@ WORKDIR /root/
 # Copy the Pre-built binary file from the previous stage
 COPY --from=builder /code/main .
 
-# Expose port 8080 to the outside world
-EXPOSE 8080
+# Expose port 7543 to the outside world
+EXPOSE 7543
 
 # Entry point to run the binary
 ENTRYPOINT ["./main"]
