@@ -40,7 +40,15 @@ func New(cfg Config) (*DB, error) {
 	}
 
 	log.Println("Database connection established successfully")
-	return &DB{db}, nil
+
+	dbInstance := &DB{db}
+
+	// Create tables
+	if err := dbInstance.CreateTables(); err != nil {
+		log.Printf("Warning: Failed to create tables: %v", err)
+	}
+
+	return dbInstance, nil
 }
 
 // Close closes the database connection

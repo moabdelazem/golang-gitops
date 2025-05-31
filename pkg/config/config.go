@@ -5,6 +5,8 @@ import (
 	"log"
 	"os"
 	"strconv"
+
+	"github.com/joho/godotenv"
 )
 
 // Config holds all configuration for our application
@@ -31,18 +33,25 @@ type DatabaseConfig struct {
 
 // Load reads configuration from environment variables
 func Load() *Config {
+	// Load .env file if it exists
+	if err := godotenv.Load(); err != nil {
+		log.Println("No .env file found, using system environment variables")
+	} else {
+		log.Println("Loaded configuration from .env file")
+	}
+
 	return &Config{
 		Server: ServerConfig{
 			Port: getEnv("SERVER_PORT", "8080"),
 			Host: getEnv("SERVER_HOST", "localhost"),
 		},
 		Database: DatabaseConfig{
-			Host:     getEnv("DB_HOST", "localhost"),
-			Port:     getEnvAsInt("DB_PORT", 5432),
-			User:     getEnv("DB_USER", "postgres"),
-			Password: getEnv("DB_PASSWORD", ""),
-			DBName:   getEnv("DB_NAME", "golang_gitops"),
-			SSLMode:  getEnv("DB_SSLMODE", "disable"),
+			Host:     getEnv("DATABASE_HOST", "localhost"),
+			Port:     getEnvAsInt("DATABASE_PORT", 5432),
+			User:     getEnv("DATABASE_USER", "postgres"),
+			Password: getEnv("DATABASE_PASSWORD", ""),
+			DBName:   getEnv("DATABASE_NAME", "golang_gitops"),
+			SSLMode:  getEnv("DATABASE_SSL_MODE", "disable"),
 		},
 	}
 }

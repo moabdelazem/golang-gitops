@@ -12,6 +12,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/moabdelazem/golang-gitops/internal/handlers"
+	"github.com/moabdelazem/golang-gitops/internal/services"
 	"github.com/moabdelazem/golang-gitops/pkg/database"
 )
 
@@ -48,6 +49,15 @@ func (s *Server) setupRoutes() {
 
 	s.router.HandleFunc("/health", healthHandler.HandleHealthCheck).Methods("GET")
 	s.router.HandleFunc("/healthz", healthHandler.HandleHealthCheck).Methods("GET") // Kubernetes style
+
+	// Counter routes (only if database is available)
+	if s.db != nil {
+		counterService := services.NewCounterService(s.db)
+		counterHandler := handlers.NewCounterHandler(counterService)
+
+		s.router.HandleFunc("/counter", counterHandler.HandleGetCounter).Methods("GET")
+		s.router.HandleFunc("/counter/increment", counterHandler.HandleIncrement).Methods("POST")
+	}
 }
 
 // Start starts the HTTP server
