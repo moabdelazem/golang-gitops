@@ -1,20 +1,17 @@
 services:
   jenkins:
-    image: janw4ld/jenkins:2.401.1-lts-alpine
-    build:
-      dockerfile_inline: |
-        FROM jenkins/jenkins:2.401.1-lts-alpine
-        USER root
-        RUN apk add --no-cache docker-cli-buildx grype  # syft
-        USER jenkins
-        RUN mkdir -p ~/.ssh ; ssh-keyscan github.com >> ~/.ssh/known_hosts
-    restart: unless-stopped
+    image: jenkins/jenkins:lts-jdk17
+    container_name: my-jenkins-server
     ports:
-      - 8080:8080
-      - 50000:50000
+      - "8080:8080"
+      - "50000:50000" # Maps port 50000 on the host to port 50000 in the container (for Jenkins agents)
     volumes:
       - jenkins_home:/var/jenkins_home
-      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - JENKINS_OPTS="--httpPort=8080"
+      # - JAVA_OPTS="-Djenkins.install.runSetupWizard=false" # Optional: Uncomment to skip the initial setup wizard (requires pre-configuration or security setup)
+    restart: unless-stopped
 
 volumes:
   jenkins_home:
+    driver: local
